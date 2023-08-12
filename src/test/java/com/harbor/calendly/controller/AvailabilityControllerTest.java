@@ -16,6 +16,7 @@ import java.util.List;
 
 import static com.harbor.calendly.model.AvailabilityDto.WEEKDAY;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AvailabilityControllerTest extends AbstractTest {
@@ -78,8 +79,8 @@ public class AvailabilityControllerTest extends AbstractTest {
     @CsvSource({
         "SUNDAY,2,3,,,true",
         "SUNDAY,2,3,,,false",
-        ",,,120000,14000, true",
-        ",,,120000,14000, false",
+        ",,,12000,14000, true",
+        ",,,12000,14000, false",
     })
     public void setAvailability_availabilityInWeeks_returnsSuccess(WEEKDAY weekDay, Integer startHr, Integer endHr, Long startEpoch,
                                                                    Long endEpoch, boolean isAvailable) {
@@ -145,9 +146,9 @@ public class AvailabilityControllerTest extends AbstractTest {
                 .pathParam("scheduleId", 123)
                 .get("/users/{userId}/schedules/{scheduleId}/availability")
                 .then()
-                .statusCode(HttpStatus.NOT_FOUND.value())
+                .statusCode(HttpStatus.OK.value())
                 .contentType(ContentType.JSON)
-                .body("errorCode", equalTo(ErrorCode.SCHEDULE_NOT_EXISTS.name()));
+                .body("size()", is(0));
     }
 
     @Test
@@ -167,7 +168,7 @@ public class AvailabilityControllerTest extends AbstractTest {
 
         List<AvailabilityDto> list = requestSpecification.contentType(ContentType.JSON)
                 .pathParam("userId", userId)
-                .pathParam("scheduleId", 123)
+                .pathParam("scheduleId", scheduleId)
                 .get("/users/{userId}/schedules/{scheduleId}/availability")
                 .then()
                 .statusCode(HttpStatus.OK.value())

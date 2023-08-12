@@ -30,7 +30,11 @@ public class ScheduleService {
                     .setCause(ex)
                     .setMessage("failed while persisting schedule")
                     .log();
-            throw new ScheduleException(ErrorCode.SCHEDULE_ALREADY_EXISTS, ex, "schedule already exists");
+            if (ex.getMessage().toLowerCase().contains("unique index")) {
+                throw new ScheduleException(ErrorCode.SCHEDULE_ALREADY_EXISTS, ex, "schedule already exists");
+            } else {
+                throw new ScheduleException(ErrorCode.UNKNOWN_ERROR, ex, "unidentified db constraint exception");
+            }
         }
     }
 

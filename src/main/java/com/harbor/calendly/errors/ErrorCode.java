@@ -13,7 +13,9 @@ public enum ErrorCode {
     SCHEDULE_ALREADY_EXISTS(HttpStatus.PRECONDITION_FAILED),
 
     USER_ALREADY_EXISTS(HttpStatus.PRECONDITION_FAILED),
-    USER_NOT_EXISTS(HttpStatus.NOT_FOUND);
+    USER_NOT_EXISTS(HttpStatus.NOT_FOUND),
+
+    UNKNOWN_ERROR(HttpStatus.INTERNAL_SERVER_ERROR);
 
     private int httpStatusCode;
 

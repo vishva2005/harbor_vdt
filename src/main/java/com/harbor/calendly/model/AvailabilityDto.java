@@ -1,5 +1,6 @@
 package com.harbor.calendly.model;
 
+import com.harbor.calendly.entities.Availability;
 import com.harbor.calendly.errors.AvailabilityException;
 import com.harbor.calendly.errors.ErrorCode;
 import lombok.Builder;
@@ -51,6 +52,29 @@ public class AvailabilityDto {
         if (condition) {
             throw new AvailabilityException(ErrorCode.INVALID_AVAILABILITY, message);
         }
+    }
+
+    public static Availability transformToAvailability(AvailabilityDto availabilityDto, Integer scheduleId) {
+        Availability availability = new Availability();
+        availability.setAvailable(availabilityDto.isAvailable());
+        availability.setEndTimeInSec(availabilityDto.getEndTimeInSec());
+        availability.setStartTimeInSec(availabilityDto.getStartTimeInSec());
+        availability.setStartDateTimeInEpoch(availabilityDto.getStartDateTimeInEpoch());
+        availability.setEndDateTimeInEpoch(availabilityDto.getEndDateTimeInEpoch());
+        availability.setWeekDay(availabilityDto.getWeekDay());
+        availability.setScheduleId(scheduleId);
+        return availability;
+    }
+
+    public static AvailabilityDto transformToAvailabilityDto(Availability availability) {
+        return AvailabilityDto.builder()
+                .isAvailable(availability.isAvailable())
+                .startTimeInSec(availability.getStartTimeInSec())
+                .endTimeInSec(availability.getEndTimeInSec())
+                .startDateTimeInEpoch(availability.getStartDateTimeInEpoch())
+                .endDateTimeInEpoch(availability.getEndDateTimeInEpoch())
+                .weekDay(availability.getWeekDay())
+                .build();
     }
 
 }

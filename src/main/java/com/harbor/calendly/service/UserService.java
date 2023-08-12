@@ -30,7 +30,11 @@ public class UserService {
                     .setMessage("failed to create user")
                     .setCause(ex)
                     .log();
-            throw new UserException(ErrorCode.USER_ALREADY_EXISTS, ex, "user email already exists");
+            if (ex.getMessage().toLowerCase().contains("unique index")) {
+                throw new UserException(ErrorCode.USER_ALREADY_EXISTS, ex, "user email already exists");
+            } else {
+                throw new UserException(ErrorCode.UNKNOWN_ERROR, ex, "unidentified db constraint exception");
+            }
         }
         return user;
     }
