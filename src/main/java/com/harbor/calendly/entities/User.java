@@ -1,13 +1,11 @@
 package com.harbor.calendly.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@Table(name = "users_tbl")
 @Getter
 @Setter
 public class User {
@@ -16,7 +14,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
-    private String userName;
+    private String name;
 
     private String email;
 
