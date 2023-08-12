@@ -11,8 +11,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AbstractTest {
 
-    public static final String APPLICATION_JSON = "application/json";
-
     @LocalServerPort
     protected int port;
 
@@ -23,9 +21,22 @@ public class AbstractTest {
 
     @BeforeEach
     public void setup() {
-        jdbcTemplate.execute("truncate table users_tbl");
+        jdbcTemplate.execute("delete from schedule_tbl");
+        jdbcTemplate.execute("delete from users_tbl");
         this.requestSpecification = RestAssured.given()
                 .baseUri("http://localhost:"+port);
+    }
+
+    protected Integer createUserAndReturnId(String name, String email) {
+        jdbcTemplate.update("insert into users_tbl(name, email) values(?,?)", name, email);
+        return jdbcTemplate.queryForObject("select id from users_tbl where email = ?", Integer.class, email);
+    }
+
+    protected Integer createScheduleAndReturnId(Integer userId, String name, String timeZone, String description) {
+        jdbcTemplate.update("insert into schedule_tbl(user_id, name, timezone, description) " +
+                "values(?,?,?,?)", userId, name, timeZone, description);
+        return jdbcTemplate.queryForObject("select id from schedule_tbl where user_id = ? and name = ?",
+                Integer.class, userId, name);
     }
 
 }

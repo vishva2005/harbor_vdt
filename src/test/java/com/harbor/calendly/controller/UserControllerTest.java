@@ -16,11 +16,11 @@ public class UserControllerTest extends AbstractTest {
     public void testCreateUser_emailAndNameProvided_returnsSuccess() {
         requestSpecification
                 .body(UserDto.builder().name("Arthas").email("arthas@xyz.com").build())
-                .contentType(APPLICATION_JSON)
+                .contentType(ContentType.JSON)
                 .post("/users")
                 .then()
                 .statusCode(HttpStatus.CREATED.value())
-                .contentType(APPLICATION_JSON)
+                .contentType(ContentType.JSON)
                 .body("name", equalTo("Arthas"))
                 .body("email", equalTo("arthas@xyz.com"))
                 .body("id", notNullValue());
@@ -28,29 +28,27 @@ public class UserControllerTest extends AbstractTest {
 
     @Test
     public void testCreateUser_emailAlreadyExists_returnsError() {
-        jdbcTemplate.execute("insert into users_tbl(name, email) values('Arthas','arthas@xyz.com')");
+        createUserAndReturnId("Arthas", "arthas@xyz.com");
         requestSpecification
                 .body(UserDto.builder().name("Arthas").email("arthas@xyz.com").build())
                 .contentType(ContentType.JSON)
                 .post("/users")
                 .then()
                 .statusCode(HttpStatus.PRECONDITION_FAILED.value())
-                .contentType(APPLICATION_JSON)
+                .contentType(ContentType.JSON)
                 .body("errorCode", equalTo(ErrorCode.USER_ALREADY_EXISTS.name()));
     }
 
     @Test
     public void testGetUser_userExists_returnUserData() {
-        jdbcTemplate.execute("insert into users_tbl(name, email) values('Arthas','arthas@xyz.com')");
-        int userId = jdbcTemplate.queryForObject("select id from users_tbl where email = 'arthas@xyz.com'",
-                Integer.class);
+        Integer userId = createUserAndReturnId("Arthas", "arthas@xyz.com");
 
         requestSpecification
                 .pathParam("userId", userId)
                 .get("/users/{userId}")
                 .then()
                 .statusCode(HttpStatus.OK.value())
-                .contentType(APPLICATION_JSON)
+                .contentType(ContentType.JSON)
                 .body("name", equalTo("Arthas"))
                 .body("email", equalTo("arthas@xyz.com"))
                 .body("id", equalTo(userId));
@@ -63,7 +61,7 @@ public class UserControllerTest extends AbstractTest {
                 .get("/users/{userId}")
                 .then()
                 .statusCode(HttpStatus.NOT_FOUND.value())
-                .contentType(APPLICATION_JSON)
+                .contentType(ContentType.JSON)
                 .body("errorCode", equalTo(ErrorCode.USER_NOT_EXISTS.name()));
     }
 
