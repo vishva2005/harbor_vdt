@@ -23,7 +23,7 @@ public class AbstractTest {
 
     @BeforeEach
     public void setup() {
-        jdbcTemplate.execute("truncate users_tbl");
+        jdbcTemplate.execute("truncate table users_tbl");
         this.requestSpecification = RestAssured.given()
                 .baseUri("http://localhost:"+port);
     }

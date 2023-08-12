@@ -3,6 +3,7 @@ package com.harbor.calendly.controller;
 import com.harbor.calendly.base.AbstractTest;
 import com.harbor.calendly.errors.ErrorCode;
 import com.harbor.calendly.model.UserDto;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
@@ -15,6 +16,7 @@ public class UserControllerTest extends AbstractTest {
     public void testCreateUser_emailAndNameProvided_returnsSuccess() {
         requestSpecification
                 .body(UserDto.builder().name("Arthas").email("arthas@xyz.com").build())
+                .contentType(APPLICATION_JSON)
                 .post("/users")
                 .then()
                 .statusCode(HttpStatus.CREATED.value())
@@ -29,6 +31,7 @@ public class UserControllerTest extends AbstractTest {
         jdbcTemplate.execute("insert into users_tbl(name, email) values('Arthas','arthas@xyz.com')");
         requestSpecification
                 .body(UserDto.builder().name("Arthas").email("arthas@xyz.com").build())
+                .contentType(ContentType.JSON)
                 .post("/users")
                 .then()
                 .statusCode(HttpStatus.PRECONDITION_FAILED.value())
