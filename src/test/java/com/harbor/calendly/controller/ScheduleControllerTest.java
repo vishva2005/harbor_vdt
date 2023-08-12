@@ -17,7 +17,7 @@ public class ScheduleControllerTest extends AbstractTest {
         Integer userId = createUserAndReturnId("Arthas", "arthas@xyz.com");
 
         ScheduleDto scheduleDto = ScheduleDto.builder()
-                .name("schedule1").timeZone("Asia/Kolkata").description("dummy")
+                .name("schedule1").timezone("Asia/Kolkata").description("dummy")
                 .build();
         requestSpecification.contentType(ContentType.JSON)
                 .pathParam("userId", userId)
@@ -29,28 +29,28 @@ public class ScheduleControllerTest extends AbstractTest {
                 .body("id", notNullValue())
                 .body("name", equalTo(scheduleDto.getName()))
                 .body("description", equalTo(scheduleDto.getDescription()))
-                .body("timeZone", equalTo(scheduleDto.getTimeZone()));
+                .body("timezone", equalTo(scheduleDto.getTimezone()));
     }
 
     @Test
     public void createSchedule_userNotExists_failedStatusCode() {
         ScheduleDto scheduleDto = ScheduleDto.builder()
-                .name("schedule1").timeZone("Asia/Kolkata").description("dummy")
+                .name("schedule1").timezone("Asia/Kolkata").description("dummy")
                 .build();
         requestSpecification.contentType(ContentType.JSON)
                 .pathParam("userId", 123)
                 .body(scheduleDto)
                 .post("/users/{userId}/schedules")
                 .then()
-                .statusCode(HttpStatus.PRECONDITION_FAILED.value())
+                .statusCode(HttpStatus.NOT_FOUND.value())
                 .contentType(ContentType.JSON)
-                .body("errorCode", equalTo(ErrorCode.USER_NOT_EXISTS));
+                .body("errorCode", equalTo(ErrorCode.USER_NOT_EXISTS.name()));
     }
 
     @Test
     public void createSchedule_invalidTimeZone_failedStatusCode() {
         ScheduleDto scheduleDto = ScheduleDto.builder()
-                .name("schedule1").timeZone("dummy").description("dummy")
+                .name("schedule1").timezone("dummy").description("dummy")
                 .build();
         requestSpecification.contentType(ContentType.JSON)
                 .pathParam("userId", 123)
@@ -59,19 +59,20 @@ public class ScheduleControllerTest extends AbstractTest {
                 .then()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .contentType(ContentType.JSON)
-                .body("errorCode", equalTo(ErrorCode.INVALID_TIMEZONE));
+                .body("errorCode", equalTo(ErrorCode.INVALID_TIMEZONE.name()));
     }
 
     @Test
     public void getSchedule_scheduleNotExist_404StatusCode() {
+        Integer userId = createUserAndReturnId("Arthas", "arthas@xyz.com");
         requestSpecification
-                .pathParam("userId", 123)
+                .pathParam("userId", userId)
                 .pathParam("scheduleId", 1234)
                 .get("/users/{userId}/schedules/{scheduleId}")
                 .then()
                 .statusCode(HttpStatus.NOT_FOUND.value())
                 .contentType(ContentType.JSON)
-                .body("errorCode", equalTo(ErrorCode.SCHEDULE_NOT_EXISTS));
+                .body("errorCode", equalTo(ErrorCode.SCHEDULE_NOT_EXISTS.name()));
     }
 
     @Test
@@ -89,19 +90,20 @@ public class ScheduleControllerTest extends AbstractTest {
                 .body("id", equalTo(scheduleId))
                 .body("name", equalTo("schedule1"))
                 .body("description", equalTo("dummy"))
-                .body("timeZone", equalTo("Asia/Kolkata"));
+                .body("timezone", equalTo("Asia/Kolkata"));
     }
 
     @Test
     public void deleteSchedule_scheduleNotExist_404StatusCode() {
+        Integer userId = createUserAndReturnId("Arthas", "arthas@xyz.com");
         requestSpecification
-                .pathParam("userId", 123)
+                .pathParam("userId", userId)
                 .pathParam("scheduleId", 1234)
                 .delete("/users/{userId}/schedules/{scheduleId}")
                 .then()
                 .statusCode(HttpStatus.NOT_FOUND.value())
                 .contentType(ContentType.JSON)
-                .body("errorCode", equalTo(ErrorCode.SCHEDULE_NOT_EXISTS));
+                .body("errorCode", equalTo(ErrorCode.SCHEDULE_NOT_EXISTS.name()));
     }
 
     @Test
@@ -119,19 +121,20 @@ public class ScheduleControllerTest extends AbstractTest {
 
     @Test
     public void updateSchedule_scheduleNotExist_404StatusCode() {
+        Integer userId = createUserAndReturnId("Arthas", "arthas@xyz.com");
         ScheduleDto scheduleDto = ScheduleDto.builder()
-                .name("schedule1").timeZone("Asia/Kolkata").description("updated Dummy")
+                .name("schedule1").timezone("Asia/Kolkata").description("updated Dummy")
                 .build();
 
         requestSpecification.contentType(ContentType.JSON)
-                .pathParam("userId", 123)
+                .pathParam("userId", userId)
                 .pathParam("scheduleId", 1234)
                 .body(scheduleDto)
                 .patch("/users/{userId}/schedules/{scheduleId}")
                 .then()
                 .statusCode(HttpStatus.NOT_FOUND.value())
                 .contentType(ContentType.JSON)
-                .body("errorCode", equalTo(ErrorCode.SCHEDULE_NOT_EXISTS));
+                .body("errorCode", equalTo(ErrorCode.SCHEDULE_NOT_EXISTS.name()));
     }
 
     @Test
@@ -140,7 +143,7 @@ public class ScheduleControllerTest extends AbstractTest {
         Integer scheduleId = createScheduleAndReturnId(userId, "schedule1", "Asia/Kolkata", "dummy");
 
         ScheduleDto scheduleDto = ScheduleDto.builder()
-                .name("schedule1").timeZone("Asia/Kolkata").description("updated Dummy")
+                .name("schedule1").timezone("Asia/Kolkata").description("updated Dummy")
                 .build();
 
         requestSpecification.contentType(ContentType.JSON)
@@ -154,7 +157,7 @@ public class ScheduleControllerTest extends AbstractTest {
                 .body("id", equalTo(scheduleId))
                 .body("name", equalTo("schedule1"))
                 .body("description", equalTo("updated Dummy"))
-                .body("timeZone", equalTo("Asia/Kolkata"));
+                .body("timezone", equalTo("Asia/Kolkata"));
     }
 
 }

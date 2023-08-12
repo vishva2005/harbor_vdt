@@ -20,9 +20,9 @@ public class Schedule {
 
     private Integer userId;
 
-    private String scheduleName;
+    private String name;
 
-    private String timeZone;
+    private String timezone;
 
     private String description;
 
