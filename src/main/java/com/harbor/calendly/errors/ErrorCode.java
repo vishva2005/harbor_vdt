@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
 
+    INVALID_AVAILABILITY(HttpStatus.BAD_REQUEST),
+
     INVALID_TIMEZONE(HttpStatus.BAD_REQUEST),
     SCHEDULE_NOT_EXISTS(HttpStatus.NOT_FOUND),
     SCHEDULE_ALREADY_EXISTS(HttpStatus.PRECONDITION_FAILED),
