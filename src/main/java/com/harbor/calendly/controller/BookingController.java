@@ -2,7 +2,7 @@ package com.harbor.calendly.controller;
 
 import com.harbor.calendly.entities.BookingSlot;
 import com.harbor.calendly.entities.Schedule;
-import com.harbor.calendly.model.AvailabilityDto;
+import com.harbor.calendly.model.AvailableSlotDto;
 import com.harbor.calendly.model.BookingSlotDto;
 import com.harbor.calendly.service.BookingSlotService;
 import com.harbor.calendly.service.ScheduleService;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -42,10 +41,11 @@ public class BookingController {
     }
 
     @GetMapping("/slots")
-    public List<AvailabilityDto> getAvailableSlots(@PathVariable("scheduleId")int scheduleId,
-                                                   @RequestParam("startTime") long startTime,
-                                                   @RequestParam("endTime") long endTime) {
-        return new ArrayList<>();
+    public List<AvailableSlotDto> getAvailableSlots(@PathVariable("scheduleId")int scheduleId,
+                                                    @RequestParam("startDateTime") long startDateTime,
+                                                    @RequestParam("endDateTime") long endDateTime) {
+        Schedule schedule = scheduleService.getSchedule(scheduleId);
+        return bookingSlotService.getAllAvailableSlots(scheduleId, schedule.getUserId(), startDateTime, endDateTime);
     }
 
 }
