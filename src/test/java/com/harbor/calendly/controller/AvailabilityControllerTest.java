@@ -9,6 +9,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.http.HttpStatus;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -113,10 +114,8 @@ public class AvailabilityControllerTest extends AbstractTest {
         Integer userId = createUserAndReturnId("Arthas", "arthas@xyz.com");
         Integer scheduleId = createScheduleAndReturnId(userId, "schedule1", "Asia/Kolkata", "dummy");
 
-        createAvailability(scheduleId, WEEKDAY.SATURDAY, getSecondsFrom0Hour(3,0), getSecondsFrom0Hour(4,0),
-                null, null, true);
-        createAvailability(scheduleId, WEEKDAY.SATURDAY, getSecondsFrom0Hour(13,0), getSecondsFrom0Hour(14,0),
-                null, null, true);
+        createAvailability(scheduleId, WEEKDAY.SATURDAY, getSecondsFrom0Hour(3,0), getSecondsFrom0Hour(4,0), true);
+        createAvailability(scheduleId, WEEKDAY.SATURDAY, getSecondsFrom0Hour(13,0), getSecondsFrom0Hour(14,0), true);
 
         List<AvailabilityDto> availibilityList = new ArrayList<>();
         availibilityList.add(AvailabilityDto.builder()
@@ -156,15 +155,12 @@ public class AvailabilityControllerTest extends AbstractTest {
         Integer userId = createUserAndReturnId("Arthas", "arthas@xyz.com");
         Integer scheduleId = createScheduleAndReturnId(userId, "schedule1", "Asia/Kolkata", "dummy");
 
-        createAvailability(scheduleId, WEEKDAY.SATURDAY, getSecondsFrom0Hour(3,0), getSecondsFrom0Hour(4,0),
-                null, null, true);
+        createAvailability(scheduleId, WEEKDAY.SATURDAY, getSecondsFrom0Hour(3,0), getSecondsFrom0Hour(4,0), true);
 
         Calendar endDateTime = Calendar.getInstance();
         endDateTime.add(Calendar.HOUR, 1);
 
-        createAvailability(scheduleId, null, null, null,
-                Calendar.getInstance().getTimeInMillis()/1000,
-                endDateTime.getTimeInMillis()/1000, true);
+        createAvailability(scheduleId, LocalDateTime.now(), LocalDateTime.now().plusHours(5), true);
 
         List<AvailabilityDto> list = requestSpecification.contentType(ContentType.JSON)
                 .pathParam("userId", userId)
@@ -177,13 +173,6 @@ public class AvailabilityControllerTest extends AbstractTest {
                 .body().jsonPath().getList(".", AvailabilityDto.class);
 
         assertEquals(2, list.size());
-    }
-
-    private static final Integer getSecondsFrom0Hour(Integer hour, Integer minutes) {
-        if (hour == null) {
-            return null;
-        }
-        return hour*3600 + minutes*60;
     }
 
 }

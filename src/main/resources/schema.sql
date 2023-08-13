@@ -32,3 +32,15 @@ create table availability_tbl(
     is_available                boolean not null default true,
     foreign key (schedule_id) references schedule_tbl(id)
 );
+
+create sequence booking_slot_tbl_seq;
+create table booking_slot_tbl(
+    id                          int not null primary key auto_increment,
+    user_id                     int not null,
+    guest_email                 varchar(255) not null,
+    guest_name                  varchar(255) not null,
+    description                 text not null,
+    start_date_time_in_epoch    int not null,
+    end_date_time_in_epoch      int not null,
+    foreign key (user_id) references users_tbl(id)
+);

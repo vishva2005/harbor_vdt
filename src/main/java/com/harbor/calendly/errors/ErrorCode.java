@@ -6,6 +6,10 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
 
+    SLOT_OUTSIDE_AVAILABLE_HOURS(HttpStatus.PRECONDITION_FAILED),
+    SLOT_ALREADY_BOOKED(HttpStatus.PRECONDITION_FAILED),
+    INVALID_SLOT(HttpStatus.PRECONDITION_FAILED),
+
     INVALID_AVAILABILITY(HttpStatus.BAD_REQUEST),
 
     INVALID_TIMEZONE(HttpStatus.BAD_REQUEST),

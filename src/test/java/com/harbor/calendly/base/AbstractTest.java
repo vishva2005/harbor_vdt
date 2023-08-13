@@ -9,7 +9,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-;import java.util.Optional;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Optional;
+
+;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AbstractTest {
@@ -24,6 +28,7 @@ public class AbstractTest {
 
     @BeforeEach
     public void setup() {
+        jdbcTemplate.execute("delete from booking_slot_tbl");
         jdbcTemplate.execute("delete from availability_tbl");
         jdbcTemplate.execute("delete from schedule_tbl");
         jdbcTemplate.execute("delete from users_tbl");
@@ -44,12 +49,33 @@ public class AbstractTest {
     }
 
     protected void createAvailability(Integer scheduleId,
-                                                    WEEKDAY weekday, Integer startTime, Integer endTime,
-                                                    Long startTimeEpoch, Long endTimeEpoch, boolean isAvailable) {
+                                                    WEEKDAY weekday, Integer startTime, Integer endTime, boolean isAvailable) {
         jdbcTemplate.update("insert into availability_tbl(schedule_id, weekday, start_time_in_sec, end_time_in_sec, " +
                 "start_date_time_in_epoch, end_date_time_in_epoch, is_available) " +
                 "values(?,?,?,?,?,?,?)", scheduleId, Optional.ofNullable(weekday).map(WEEKDAY::name).orElse(null),
-                startTime, endTime, startTimeEpoch, endTimeEpoch, isAvailable);
+                startTime, endTime, null, null, isAvailable);
+    }
+
+    protected void createAvailability(Integer scheduleId,
+                                      LocalDateTime startDateTime, LocalDateTime endDateTime, boolean isAvailable) {
+        jdbcTemplate.update("insert into availability_tbl(schedule_id, weekday, start_time_in_sec, end_time_in_sec, " +
+                        "start_date_time_in_epoch, end_date_time_in_epoch, is_available) " +
+                        "values(?,?,?,?,?,?,?)", scheduleId, null,
+                null, null, startDateTime.atZone(ZoneId.systemDefault()).toEpochSecond(), endDateTime.atZone(ZoneId.systemDefault()).toEpochSecond(),
+                isAvailable);
+    }
+
+    protected void createBookingSlot(Integer userId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        jdbcTemplate.update("insert into booking_slot_tbl(user_id, guest_email, guest_name, description, start_date_time_in_epoch, end_date_time_in_epoch) " +
+                        "values(?,?,?,?,?,?)", userId, "Durotan@xyz.com", "Durotan", "war Meeting",
+                startDateTime.atZone(ZoneId.systemDefault()).toEpochSecond(), endDateTime.atZone(ZoneId.systemDefault()).toEpochSecond());
+    }
+
+    protected Integer getSecondsFrom0Hour(Integer hour, Integer minutes) {
+        if (hour == null) {
+            return null;
+        }
+        return hour*3600 + minutes*60;
     }
 
 }

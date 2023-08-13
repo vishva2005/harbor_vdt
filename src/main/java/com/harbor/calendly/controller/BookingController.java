@@ -17,14 +17,13 @@ import java.util.List;
 @RequestMapping("/schedules/{scheduleId}/")
 public class BookingController {
 
-    @PostMapping("/bookSlot")
+    @PostMapping("/slots")
     public void bookSlot(@PathVariable("scheduleId")int scheduleId,
                          @RequestBody BookSlotDto bookSlotDto) {
     }
 
-    @GetMapping("/availableSlots")
-    public List<AvailabilityDto> getAvailableSlots(@PathVariable("userId")int userId,
-                                                   @PathVariable("scheduleId")int scheduleId,
+    @GetMapping("/slots")
+    public List<AvailabilityDto> getAvailableSlots(@PathVariable("scheduleId")int scheduleId,
                                                    @RequestParam("startTime") long startTime,
                                                    @RequestParam("endTime") long endTime) {
         return new ArrayList<>();
