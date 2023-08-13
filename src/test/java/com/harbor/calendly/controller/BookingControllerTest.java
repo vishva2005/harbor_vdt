@@ -2,8 +2,7 @@ package com.harbor.calendly.controller;
 
 import com.harbor.calendly.base.AbstractTest;
 import com.harbor.calendly.errors.ErrorCode;
-import com.harbor.calendly.model.AvailabilityDto.WEEKDAY;
-import com.harbor.calendly.model.BookSlotDto;
+import com.harbor.calendly.model.BookingSlotDto;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -39,14 +38,14 @@ public class BookingControllerTest extends AbstractTest {
         Integer userId = createUserAndReturnId("Arthas", "arthas@xyz.com");
         Integer scheduleId = createScheduleAndReturnId(userId, "schedule1", "Asia/Kolkata", "dummy");
 
-        createAvailability(scheduleId, WEEKDAY.SATURDAY, getSecondsFrom0Hour(3,0), getSecondsFrom0Hour(15,0),true);
+        createAvailability(scheduleId, DayOfWeek.SATURDAY, getSecondsFrom0Hour(3,0), getSecondsFrom0Hour(15,0),true);
         createAvailability(scheduleId, getLocalDateTime(DayOfWeek.MONDAY, 3), getLocalDateTime(DayOfWeek.MONDAY, 9), true);
         createAvailability(scheduleId, getLocalDateTime(DayOfWeek.SATURDAY, 4), getLocalDateTime(DayOfWeek.SATURDAY, 5), false);
 
         LocalDateTime startDateTime = LocalDate.now().with(next(bookingDay)).atTime(startHr, 0);
         LocalDateTime endDateTime = LocalDate.now().with(next(bookingDay)).atTime(endHr, 0);
 
-        BookSlotDto bookSlotDto = BookSlotDto.builder()
+        BookingSlotDto bookingSlotDto = BookingSlotDto.builder()
                 .description("create new booking")
                 .guestEmail("thrall@xyz.com")
                 .guestName("Thrall")
@@ -56,7 +55,7 @@ public class BookingControllerTest extends AbstractTest {
 
         requestSpecification.contentType(ContentType.JSON)
                 .pathParam("scheduleId", scheduleId)
-                .body(bookSlotDto)
+                .body(bookingSlotDto)
                 .post("/schedules/{scheduleId}/slots")
                 .then()
                 .statusCode(ErrorCode.SLOT_OUTSIDE_AVAILABLE_HOURS.getHttpStatusCode())
@@ -79,13 +78,13 @@ public class BookingControllerTest extends AbstractTest {
         Integer scheduleId = createScheduleAndReturnId(userId, "schedule1", "Asia/Kolkata", "dummy");
         createBookingSlot(userId, getLocalDateTime(bookedDay, bookedStartHr), getLocalDateTime(bookedDay, bookedEndHr));
 
-        createAvailability(scheduleId, WEEKDAY.SATURDAY, getSecondsFrom0Hour(3,0), getSecondsFrom0Hour(15,0),true);
+        createAvailability(scheduleId, DayOfWeek.SATURDAY, getSecondsFrom0Hour(3,0), getSecondsFrom0Hour(15,0),true);
         createAvailability(scheduleId, getLocalDateTime(DayOfWeek.MONDAY, 3), getLocalDateTime(DayOfWeek.MONDAY, 9), true);
 
         LocalDateTime startDateTime = getLocalDateTime(dayToBook, startHrToBook);
         LocalDateTime endDateTime = getLocalDateTime(dayToBook, endHrToBook);
 
-        BookSlotDto bookSlotDto = BookSlotDto.builder()
+        BookingSlotDto bookingSlotDto = BookingSlotDto.builder()
                 .description("create new booking")
                 .guestEmail("thrall@xyz.com")
                 .guestName("Thrall")
@@ -95,7 +94,7 @@ public class BookingControllerTest extends AbstractTest {
 
         requestSpecification.contentType(ContentType.JSON)
                 .pathParam("scheduleId", scheduleId)
-                .body(bookSlotDto)
+                .body(bookingSlotDto)
                 .post("/schedules/{scheduleId}/slots")
                 .then()
                 .statusCode(ErrorCode.SLOT_ALREADY_BOOKED.getHttpStatusCode())
@@ -116,13 +115,13 @@ public class BookingControllerTest extends AbstractTest {
         Integer scheduleId = createScheduleAndReturnId(userId, "schedule1", "Asia/Kolkata", "dummy");
         createBookingSlot(userId, getLocalDateTime(bookedDay, bookedStartHr), getLocalDateTime(bookedDay, bookedEndHr));
 
-        createAvailability(scheduleId, WEEKDAY.SATURDAY, getSecondsFrom0Hour(3,0), getSecondsFrom0Hour(15,0),true);
+        createAvailability(scheduleId, DayOfWeek.SATURDAY, getSecondsFrom0Hour(3,0), getSecondsFrom0Hour(15,0),true);
         createAvailability(scheduleId, getLocalDateTime(DayOfWeek.MONDAY, 3), getLocalDateTime(DayOfWeek.MONDAY, 9), true);
 
         LocalDateTime startDateTime = getLocalDateTime(dayToBook, startHrToBook);
         LocalDateTime endDateTime = getLocalDateTime(dayToBook, endHrToBook);
 
-        BookSlotDto bookSlotDto = BookSlotDto.builder()
+        BookingSlotDto bookingSlotDto = BookingSlotDto.builder()
                 .description("create new booking")
                 .guestEmail("thrall@xyz.com")
                 .guestName("Thrall")
@@ -132,7 +131,7 @@ public class BookingControllerTest extends AbstractTest {
 
         requestSpecification.contentType(ContentType.JSON)
                 .pathParam("scheduleId", scheduleId)
-                .body(bookSlotDto)
+                .body(bookingSlotDto)
                 .post("/schedules/{scheduleId}/slots")
                 .then()
                 .statusCode(HttpStatus.OK.value());
@@ -145,7 +144,7 @@ public class BookingControllerTest extends AbstractTest {
         Integer userId = createUserAndReturnId("Arthas", "arthas@xyz.com");
         Integer scheduleId = createScheduleAndReturnId(userId, "schedule1", "Asia/Kolkata", "dummy");
 
-        createAvailability(scheduleId, WEEKDAY.SATURDAY, getSecondsFrom0Hour(3,0), getSecondsFrom0Hour(15,0),true);
+        createAvailability(scheduleId, DayOfWeek.SATURDAY, getSecondsFrom0Hour(3,0), getSecondsFrom0Hour(15,0),true);
         createAvailability(scheduleId, getLocalDateTime(DayOfWeek.MONDAY, 3), getLocalDateTime(DayOfWeek.MONDAY, 9), true);
 
         LocalDateTime startDateTime = getLocalDateTime(DayOfWeek.TUESDAY, 4);
@@ -167,22 +166,22 @@ public class BookingControllerTest extends AbstractTest {
         Integer userId = createUserAndReturnId("Arthas", "arthas@xyz.com");
         Integer scheduleId = createScheduleAndReturnId(userId, "schedule1", "Asia/Kolkata", "dummy");
 
-        createAvailability(scheduleId, WEEKDAY.SATURDAY, getSecondsFrom0Hour(3,0), getSecondsFrom0Hour(15,0),true);
+        createAvailability(scheduleId, DayOfWeek.SATURDAY, getSecondsFrom0Hour(3,0), getSecondsFrom0Hour(15,0),true);
         createAvailability(scheduleId, getLocalDateTime(DayOfWeek.MONDAY, 3), getLocalDateTime(DayOfWeek.MONDAY, 9), true);
         createBookingSlot(userId, getLocalDateTime(DayOfWeek.SATURDAY, 5), getLocalDateTime(DayOfWeek.SATURDAY, 6));
 
         LocalDateTime startDateTime = getLocalDateTime(DayOfWeek.SATURDAY, 0);
         LocalDateTime endDateTime = startDateTime.plusDays(3);
 
-        List<BookSlotDto> expectedSlots = new ArrayList<>();
-        expectedSlots.add(BookSlotDto.builder().startDateTimeInEpoch(getEpochSeconds(DayOfWeek.SATURDAY,3))
+        List<BookingSlotDto> expectedSlots = new ArrayList<>();
+        expectedSlots.add(BookingSlotDto.builder().startDateTimeInEpoch(getEpochSeconds(DayOfWeek.SATURDAY,3))
                 .endDateTimeInEpoch(getEpochSeconds(DayOfWeek.SATURDAY,5)).build());
-        expectedSlots.add(BookSlotDto.builder().startDateTimeInEpoch(getEpochSeconds(DayOfWeek.SATURDAY,6))
+        expectedSlots.add(BookingSlotDto.builder().startDateTimeInEpoch(getEpochSeconds(DayOfWeek.SATURDAY,6))
                 .endDateTimeInEpoch(getEpochSeconds(DayOfWeek.SATURDAY,15)).build());
-        expectedSlots.add(BookSlotDto.builder().startDateTimeInEpoch(getEpochSeconds(DayOfWeek.MONDAY,3))
+        expectedSlots.add(BookingSlotDto.builder().startDateTimeInEpoch(getEpochSeconds(DayOfWeek.MONDAY,3))
                 .endDateTimeInEpoch(getEpochSeconds(DayOfWeek.MONDAY,9)).build());
 
-        List<BookSlotDto> actualSlots = requestSpecification.contentType(ContentType.JSON)
+        List<BookingSlotDto> actualSlots = requestSpecification.contentType(ContentType.JSON)
                 .pathParam("scheduleId", scheduleId)
                 .queryParam("startTime", startDateTime.atZone(ZoneId.systemDefault()).toEpochSecond())
                 .queryParam("endTime", endDateTime.atZone(ZoneId.systemDefault()).toEpochSecond())
@@ -190,12 +189,12 @@ public class BookingControllerTest extends AbstractTest {
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .contentType(ContentType.JSON)
-                .extract().jsonPath().getList(".", BookSlotDto.class);
+                .extract().jsonPath().getList(".", BookingSlotDto.class);
 
         assertEquals(expectedSlots.size(), actualSlots.size());
         for(int i = 0; i < expectedSlots.size(); i++) {
-            BookSlotDto expectedSlot = expectedSlots.get(i);
-            BookSlotDto actualSlot = actualSlots.get(i);
+            BookingSlotDto expectedSlot = expectedSlots.get(i);
+            BookingSlotDto actualSlot = actualSlots.get(i);
             assertEquals(expectedSlot.getStartDateTimeInEpoch(), actualSlot.getStartDateTimeInEpoch());
             assertEquals(expectedSlot.getEndDateTimeInEpoch(), actualSlot.getEndDateTimeInEpoch());
         }

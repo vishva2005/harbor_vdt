@@ -7,20 +7,20 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.DayOfWeek;
+
 @Getter
 @Setter
 @Builder
 public class AvailabilityDto {
 
-    public enum WEEKDAY { SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY }
-
-    private WEEKDAY weekDay;
+    private DayOfWeek weekDay;
 
     // time in sec from 0000 hrs
     private Integer startTimeInSec;
 
     // time in sec from 0000 hrs
-    private Integer endTimeInSec;
+    private Integer durationInSec;
 
     private boolean isAvailable = true;
 
@@ -33,14 +33,14 @@ public class AvailabilityDto {
     public void validate() {
         if (weekDay != null) {
             checkCondition(startTimeInSec == null, "start time can not be null");
-            checkCondition(endTimeInSec == null, "end time can not be null");
-            checkCondition(endTimeInSec <= startTimeInSec, "end time can not be less than start time");
+            checkCondition(durationInSec == null, "end time can not be null");
+            checkCondition(durationInSec <= 0, "end time can not be less than start time");
 
             checkCondition(startDateTimeInEpoch != null, "startDateTimeInEpoch should be null");
             checkCondition(endDateTimeInEpoch != null, "endDateTimeInEpoch should be null");
         } else {
             checkCondition(startTimeInSec != null, "start time should be null");
-            checkCondition(endTimeInSec != null, "end time should be null");
+            checkCondition(durationInSec != null, "end time should be null");
 
             checkCondition(startDateTimeInEpoch == null, "startDateTimeInEpoch can not be null");
             checkCondition(endDateTimeInEpoch == null, "endDateTimeInEpoch can not be null");
@@ -57,7 +57,7 @@ public class AvailabilityDto {
     public static Availability transformToAvailability(AvailabilityDto availabilityDto, Integer scheduleId) {
         Availability availability = new Availability();
         availability.setAvailable(availabilityDto.isAvailable());
-        availability.setEndTimeInSec(availabilityDto.getEndTimeInSec());
+        availability.setDurationInSec(availabilityDto.getDurationInSec());
         availability.setStartTimeInSec(availabilityDto.getStartTimeInSec());
         availability.setStartDateTimeInEpoch(availabilityDto.getStartDateTimeInEpoch());
         availability.setEndDateTimeInEpoch(availabilityDto.getEndDateTimeInEpoch());
@@ -70,7 +70,7 @@ public class AvailabilityDto {
         return AvailabilityDto.builder()
                 .isAvailable(availability.isAvailable())
                 .startTimeInSec(availability.getStartTimeInSec())
-                .endTimeInSec(availability.getEndTimeInSec())
+                .durationInSec(availability.getDurationInSec())
                 .startDateTimeInEpoch(availability.getStartDateTimeInEpoch())
                 .endDateTimeInEpoch(availability.getEndDateTimeInEpoch())
                 .weekDay(availability.getWeekDay())

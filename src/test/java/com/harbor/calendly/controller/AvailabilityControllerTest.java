@@ -9,13 +9,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.http.HttpStatus;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-import static com.harbor.calendly.model.AvailabilityDto.WEEKDAY;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,9 +30,9 @@ public class AvailabilityControllerTest extends AbstractTest {
                 .pathParam("userId", userId)
                 .pathParam("scheduleId", 123)
                 .body(Arrays.asList(AvailabilityDto.builder()
-                        .weekDay(WEEKDAY.SUNDAY)
+                        .weekDay(DayOfWeek.SUNDAY)
                         .startTimeInSec(getSecondsFrom0Hour(8, 30))
-                        .endTimeInSec(getSecondsFrom0Hour(9, 30))
+                        .durationInSec(3600)
                         .build()))
                 .put("/users/{userId}/schedules/{scheduleId}/availability")
                 .then()
@@ -47,20 +47,20 @@ public class AvailabilityControllerTest extends AbstractTest {
             "SUNDAY,3,3,,",
             ",,,150000,14000",
     })
-    public void setAvailability_badData_returnsBadRequest(WEEKDAY weekDay, Integer startHr, Integer endHr, Long startEpoch, Long endEpoch) {
+    public void setAvailability_badData_returnsBadRequest(DayOfWeek weekDay, Integer startHr, Integer endHr, Long startEpoch, Long endEpoch) {
         Integer userId = createUserAndReturnId("Arthas", "arthas@xyz.com");
         Integer scheduleId = createScheduleAndReturnId(userId, "schedule1", "Asia/Kolkata", "dummy");
 
         List<AvailabilityDto> availibilityList = new ArrayList<>();
         availibilityList.add(AvailabilityDto.builder()
-                .weekDay(WEEKDAY.SUNDAY)
+                .weekDay(DayOfWeek.SUNDAY)
                 .startTimeInSec(getSecondsFrom0Hour(8, 30))
-                .endTimeInSec(getSecondsFrom0Hour(9, 30))
+                .durationInSec(3600)
                 .build());
         availibilityList.add(AvailabilityDto.builder()
                 .weekDay(weekDay)
                 .startTimeInSec(getSecondsFrom0Hour(startHr, 0))
-                .endTimeInSec(getSecondsFrom0Hour(endHr, 0))
+                .durationInSec(endHr == null ? null : (endHr - startHr)*3600)
                 .startDateTimeInEpoch(startEpoch)
                 .endDateTimeInEpoch(endEpoch)
                 .build());
@@ -83,7 +83,7 @@ public class AvailabilityControllerTest extends AbstractTest {
         ",,,12000,14000, true",
         ",,,12000,14000, false",
     })
-    public void setAvailability_availabilityInWeeks_returnsSuccess(WEEKDAY weekDay, Integer startHr, Integer endHr, Long startEpoch,
+    public void setAvailability_availabilityInWeeks_returnsSuccess(DayOfWeek weekDay, Integer startHr, Integer endHr, Long startEpoch,
                                                                    Long endEpoch, boolean isAvailable) {
         Integer userId = createUserAndReturnId("Arthas", "arthas@xyz.com");
         Integer scheduleId = createScheduleAndReturnId(userId, "schedule1", "Asia/Kolkata", "dummy");
@@ -92,7 +92,7 @@ public class AvailabilityControllerTest extends AbstractTest {
         availibilityList.add(AvailabilityDto.builder()
                 .weekDay(weekDay)
                 .startTimeInSec(getSecondsFrom0Hour(startHr, 0))
-                .endTimeInSec(getSecondsFrom0Hour(endHr, 0))
+                .durationInSec(endHr == null ? null : (endHr - startHr)*3600)
                 .startDateTimeInEpoch(startEpoch)
                 .endDateTimeInEpoch(endEpoch)
                 .isAvailable(isAvailable)
@@ -114,14 +114,14 @@ public class AvailabilityControllerTest extends AbstractTest {
         Integer userId = createUserAndReturnId("Arthas", "arthas@xyz.com");
         Integer scheduleId = createScheduleAndReturnId(userId, "schedule1", "Asia/Kolkata", "dummy");
 
-        createAvailability(scheduleId, WEEKDAY.SATURDAY, getSecondsFrom0Hour(3,0), getSecondsFrom0Hour(4,0), true);
-        createAvailability(scheduleId, WEEKDAY.SATURDAY, getSecondsFrom0Hour(13,0), getSecondsFrom0Hour(14,0), true);
+        createAvailability(scheduleId, DayOfWeek.SATURDAY, getSecondsFrom0Hour(3,0), getSecondsFrom0Hour(4,0), true);
+        createAvailability(scheduleId, DayOfWeek.SATURDAY, getSecondsFrom0Hour(13,0), getSecondsFrom0Hour(14,0), true);
 
         List<AvailabilityDto> availibilityList = new ArrayList<>();
         availibilityList.add(AvailabilityDto.builder()
-                .weekDay(WEEKDAY.SUNDAY)
+                .weekDay(DayOfWeek.SUNDAY)
                 .startTimeInSec(getSecondsFrom0Hour(1, 0))
-                .endTimeInSec(getSecondsFrom0Hour(2, 0))
+                .durationInSec(3600)
                 .isAvailable(true)
                 .build());
 
@@ -155,7 +155,7 @@ public class AvailabilityControllerTest extends AbstractTest {
         Integer userId = createUserAndReturnId("Arthas", "arthas@xyz.com");
         Integer scheduleId = createScheduleAndReturnId(userId, "schedule1", "Asia/Kolkata", "dummy");
 
-        createAvailability(scheduleId, WEEKDAY.SATURDAY, getSecondsFrom0Hour(3,0), getSecondsFrom0Hour(4,0), true);
+        createAvailability(scheduleId, DayOfWeek.SATURDAY, getSecondsFrom0Hour(3,0), getSecondsFrom0Hour(4,0), true);
 
         Calendar endDateTime = Calendar.getInstance();
         endDateTime.add(Calendar.HOUR, 1);

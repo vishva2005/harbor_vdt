@@ -26,7 +26,7 @@ create table availability_tbl(
     schedule_id                 int not null,
     weekday                     varchar(50),
     start_time_in_sec           int,
-    end_time_in_sec             int,
+    duration_in_sec             int,
     start_date_time_in_epoch    int,
     end_date_time_in_epoch      int,
     is_available                boolean not null default true,

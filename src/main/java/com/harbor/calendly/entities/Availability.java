@@ -1,6 +1,5 @@
 package com.harbor.calendly.entities;
 
-import com.harbor.calendly.model.AvailabilityDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,6 +9,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.DayOfWeek;
 import java.util.Optional;
 
 @Getter
@@ -32,9 +32,8 @@ public class Availability {
     // time in sec from 0000 hrs
     private Integer startTimeInSec;
 
-    @Column(name = "end_time_in_sec")
-    // time in sec from 0000 hrs
-    private Integer endTimeInSec;
+    @Column(name = "duration_in_sec")
+    private Integer durationInSec;
 
     @Column(name = "is_available")
     private boolean isAvailable = true;
@@ -47,11 +46,11 @@ public class Availability {
     // in cases where user wants to be specific they will send datetime in epoch seconds
     private Long endDateTimeInEpoch;
 
-    public AvailabilityDto.WEEKDAY getWeekDay() {
-        return Optional.ofNullable(weekDay).map(AvailabilityDto.WEEKDAY::valueOf).orElse(null);
+    public DayOfWeek getWeekDay() {
+        return Optional.ofNullable(weekDay).map(DayOfWeek::valueOf).orElse(null);
     }
 
-    public void setWeekDay(AvailabilityDto.WEEKDAY weekDay) {
+    public void setWeekDay(DayOfWeek weekDay) {
         Optional.ofNullable(weekDay).ifPresent(w -> this.weekDay = w.name());
     }
 

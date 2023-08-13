@@ -1,6 +1,5 @@
 package com.harbor.calendly.base;
 
-import com.harbor.calendly.model.AvailabilityDto.WEEKDAY;
 import io.restassured.RestAssured;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,9 +8,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Optional;
 
 ;
 
@@ -49,20 +48,20 @@ public class AbstractTest {
     }
 
     protected void createAvailability(Integer scheduleId,
-                                                    WEEKDAY weekday, Integer startTime, Integer endTime, boolean isAvailable) {
-        jdbcTemplate.update("insert into availability_tbl(schedule_id, weekday, start_time_in_sec, end_time_in_sec, " +
+                                      DayOfWeek weekday, Integer startTime, Integer endTime, boolean isAvailable) {
+        jdbcTemplate.update("insert into availability_tbl(schedule_id, weekday, start_time_in_sec, duration_in_sec, " +
                 "start_date_time_in_epoch, end_date_time_in_epoch, is_available) " +
-                "values(?,?,?,?,?,?,?)", scheduleId, Optional.ofNullable(weekday).map(WEEKDAY::name).orElse(null),
-                startTime, endTime, null, null, isAvailable);
+                "values(?,?,?,?,?,?,?)", scheduleId, weekday.name(),
+                startTime, endTime - startTime, null, null, isAvailable);
     }
 
     protected void createAvailability(Integer scheduleId,
                                       LocalDateTime startDateTime, LocalDateTime endDateTime, boolean isAvailable) {
-        jdbcTemplate.update("insert into availability_tbl(schedule_id, weekday, start_time_in_sec, end_time_in_sec, " +
+        long startDateTimeEpoch = startDateTime.atZone(ZoneId.systemDefault()).toEpochSecond();
+        long endDateTimeEpoch = endDateTime.atZone(ZoneId.systemDefault()).toEpochSecond();
+        jdbcTemplate.update("insert into availability_tbl(schedule_id, weekday, start_time_in_sec, duration_in_sec, " +
                         "start_date_time_in_epoch, end_date_time_in_epoch, is_available) " +
-                        "values(?,?,?,?,?,?,?)", scheduleId, null,
-                null, null, startDateTime.atZone(ZoneId.systemDefault()).toEpochSecond(), endDateTime.atZone(ZoneId.systemDefault()).toEpochSecond(),
-                isAvailable);
+                        "values(?,?,?,?,?,?,?)", scheduleId, null, null, null, startDateTimeEpoch, endDateTimeEpoch, isAvailable);
     }
 
     protected void createBookingSlot(Integer userId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
