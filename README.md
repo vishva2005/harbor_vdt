@@ -29,6 +29,16 @@ We don't care about
 
 It is up to you how much time you want to spend on this project. There are likely diminishing returns as the time spent goes up.
 
+## Solution
+Main Class : CalendlyApplication.java
+
+Execute the main function. 
+
+Relevant links
+- Swagger API definition : http://localhost:8080/swagger-ui.html
+- H2 in memory db : http://localhost:8080/h2-console
+- Username : sa, password : <empty>, url : jdbc:h2:mem:testdb 
+
 ## Submission
 
 Please fork this repository and reach out to Prakash when finished.
